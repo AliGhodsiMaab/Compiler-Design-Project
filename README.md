@@ -95,3 +95,107 @@ Process finished with exit code 0
 ```
 
 ---
+
+
+### Note on Limitations
+
+While the parser works well for most valid Trust programs, for **more complex input cases** involving nested structures, malformed grammar, or certain edge conditions, it **may fail to produce output** or terminate unexpectedly. This is primarily due to the limited LL(1) grammar support and tight project deadlines.
+
+---
+
+## Phase 3 – Semantic Analyzer
+
+In this phase, we designed and implemented the **Semantic Analyzer** for the Trust language. The semantic analyzer receives the **parse tree** produced by the syntax analyzer, walks through it, and reports **semantic errors** based on predefined rules.
+
+It also transforms the parse tree into an **annotated syntax tree**, allowing for enhanced checking and later code generation. The list of semantic rules to enforce is described in detail in the `Project_Info.pdf` file. While not every rule is implemented, **most critical cases are covered**, and the analyzer reports various semantic errors clearly.
+
+### Features Implemented:
+- Duplicate function declarations
+- Use of undeclared or uninitialized variables
+- Immutable variable assignment
+- Missing `main()` function
+- Type mismatches in assignments (partial)
+- Incomplete or missing return values (partial)
+
+### Sample Input Code
+```trust
+let y = 1;
+fn greet() {
+    println!("Hello World!");
+}
+fn greet() {
+    println!("Hello World!");
+}
+y = 2;
+```
+
+### Expected Semantic Errors
+```text
+Semantic Errors:
+Duplicate declaration of 'greet'
+Cannot assign to immutable variable 'y'
+No valid 'main' function defined
+
+Process finished with exit code 0
+```
+
+> These are examples of the kinds of errors required in the documentation, and our semantic analyzer correctly reports them. The analyzer operates on a simplified rule set, but covers the key educational concepts of semantic analysis in compilers.
+
+---
+
+## Phase 4 – Code Generator
+
+In the final phase, we implemented a basic **Code Generator** that translates the annotated syntax tree (from the semantic phase) into equivalent C code. Although the implementation is **incomplete**, it demonstrates how code generation works and helps the reader understand how high-level constructs are transformed into low-level executable logic.
+
+The generated code is saved into a file named `output.c`.
+
+> ⚠Please note: **Only a small subset of the Trust language** is translated — including simple variable declarations, basic control flow (if), print statements, and basic function declarations. The goal was to **showcase the core concept**, not a complete compiler backend.
+
+### Sample Input Code
+```trust
+let x: i32 = 5;
+let b: bool = true;
+fn incr(a: i32) -> i32 {
+    return a + 1;
+}
+fn main() {
+    let y: i32 = 10;
+    println!("Trust is good");
+    if y == 10 {
+    }
+}
+```
+
+### Output – C Equivalent (`output.c`)
+```c
+#include <stdio.h>
+#include <stdbool.h>
+int x = 5;
+bool b = true;
+int incr(int a) {
+    return (a + 1);
+}
+int main() {
+    int y = 10;
+    printf("Trust is good");
+    if (y == 10) {
+    }
+    return 0;
+}
+```
+
+> Many syntactic constructs are missing, and the code generator only supports a narrow range of inputs. However, the logic and structure are clear and demonstrate the purpose of code generation in a compiler pipeline.
+
+---
+
+## Final Remarks
+
+Thank you for your attention!
+
+We hope this project serves as a helpful and understandable introduction to **compiler design**, especially if you are a Computer Engineering student who hasn’t passed the course yet.
+
+Each phase is built to be illustrative, and while not production-grade, it reflects the real process of compiling a programming language from **source to target** through lexical, syntactic, semantic, and code generation stages.
+
+Feel free to explore the code, test your own programs in Trust, and expand the compiler capabilities further!
+
+> Developed with ❤️ for educational purposes.
